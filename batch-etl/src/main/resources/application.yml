@@ -1,0 +1,51 @@
+etl.input:
+  read-page-size: 2000      # how many clients are read per chunk/transaction (must be less than 2100: it is used in IN clauses)
+  sources:
+    - name: PREMIERE_SOURCE
+      platform: oracle
+      driver-class-name: oracle.jdbc.OracleDriver
+      url: jdbc:oracle:thin:@(DESCRIPTION= (ADDRESS_LIST= (LOAD_BALANCE=on)(FAILOVER=ON)(ADDRESS=(PROTOCOL=tcp)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME= MYSERV)))
+      username: CUST_001
+      password: CUST_001
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/myprojectdb?currentSchema=my_schema
+    username: my_username
+    password: my_password
+  flyway:
+    enabled: true
+    baseline-on-migrate: true   # Whether to automatically call baseline when migrating a non-empty schema.
+    group: true                 # Whether to group all pending migrations together in the same transaction when applying them.
+
+  jdbc.template:
+    fetch-size: 5000        # JDBC driver's fetch parameter
+  jpa:
+    show-sql: false
+    properties:
+    hibernate:
+      jdbc.batch_size: 100
+# see https://docs.jboss.org/hibernate/orm/current/userguide/html_single/chapters/batch/Batching.html
+
+
+## custom log levels:
+#logging.level:
+#  org.hibernate.SQL: debug
+#  org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Logging configuration.
+logging:
+  # Log levels severity mapping.
+  level:
+    # Default log level.
+    root: INFO
+    # Spring Framework log level.
+    org.springframework: WARN
+
+    # WS log level.
+    # change the verbosity permanently (overriding log4j2 config)
+    io.pulse: INFO
+  # Log file name.
+  # file: /${USER}/batch-example/logs/etl/batch-example-etl.log
+  # Maximum log file size.
+  file.max-size: 200MB
